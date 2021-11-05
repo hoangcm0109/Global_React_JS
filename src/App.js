@@ -1,23 +1,37 @@
-import logo from './logo.svg';
+import { useStore, actions } from './store'
 import './App.css';
-
+import { useRef } from 'react';
 function App() {
+
+  const [state, dispatch] = useStore()
+
+  const { todos, todoInput } = state 
+  const inputElement = useRef()
+
+  const handleSubmit = () => {
+    if(todoInput.trim()) {
+      dispatch(actions.addTodo(todoInput))
+      dispatch(actions.setTodoInput(''))
+
+      inputElement.current.focus()
+    } 
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input 
+        value={todoInput}
+        placeholder="Enter todos..."
+        ref={inputElement}
+        onChange={e => {
+          dispatch(actions.setTodoInput(e.target.value))
+        }}
+      />
+      <button onClick={handleSubmit}>Add todo</button>
+
+      {todos.map((todo, index) => (
+        <li key={index}>{todo}</li>
+      ))}
     </div>
   );
 }
